@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "contract:validate": "GENVM_VERSION=v0.3.0-rc7 genvm-lint check contracts/fixline.py",
+    "contract:validate": "GENVM_VERSION=v0.3.0-rc7 .venv/bin/genvm-lint check contracts/fixline.py",
     "contract:cli": "genlayer --version",
-    "contract:test": "pytest -q tests/direct"
+    "contract:test": ".venv/bin/pytest -q tests/direct"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.2.6",
@@ -37,5 +37,9 @@
     "jsdom": "^26.1.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "postcss": "8.5.29",
+    "sharp": "0.35.5"
   }
 }

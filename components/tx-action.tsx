@@ -16,7 +16,7 @@ export function TxAction({ method, args = [], value = 0n, children, disabled, on
       txs.update(id, { stage: "signature" });
       const hash = String(await submitContract(wallet.client, method, args, value));
       txs.update(id, { hash, stage: "submitted" });
-      const receipt = await waitForFinalized(wallet.client, hash);
+      const receipt = await waitForFinalized(wallet.client, hash, stage => txs.update(id, { stage }));
       if (!executionSucceeded(receipt)) throw new Error("The transaction finalized, but contract execution did not succeed.");
       txs.update(id, { stage: "finalized" }); await onFinalized?.();
     } catch (cause) { const message = cause instanceof Error ? cause.message : "Transaction failed."; setError(message); txs.update(id, { stage: message.toLowerCase().includes("undetermined") ? "undetermined" : "failed", error: message }); }

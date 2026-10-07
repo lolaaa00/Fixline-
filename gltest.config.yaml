@@ -1,8 +1,9 @@
-network: studionet
 networks:
+  default: studionet
   studionet:
-    rpc_url: https://studio.genlayer.com/api
-    chain_id: 61999
-contracts_dir: contracts
-artifacts_dir: artifacts
+    url: https://studio.genlayer.com/api
+    id: 61999
+paths:
+  contracts: contracts
+  artifacts: artifacts
 environment: .env

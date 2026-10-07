@@ -81,6 +81,8 @@ Important invariants:
 
 ```bash
 npm install
+python3.12 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 cp .env.example .env.local
 ```
 

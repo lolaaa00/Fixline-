@@ -38,7 +38,7 @@ export function CreateBriefForm() {
       const args = [toCalldataAddress(String(data.get("contributor"))), String(data.get("title")).trim(), String(data.get("brief")).trim(), repository.replace(/\/$/, ""), JSON.stringify(cleanCriteria), JSON.stringify(["github.com"]), acceptBy, deliverBy, award];
       const hash = String(await submitContract(wallet.client, "open_work", args, award));
       txs.update(id, { hash, stage: "submitted" }); setStatus("Submitted. Validators and the network are processing the transaction…");
-      const receipt = await waitForFinalized(wallet.client, hash);
+      const receipt = await waitForFinalized(wallet.client, hash, stage => txs.update(id, { stage }));
       if (!executionSucceeded(receipt)) throw new Error("The transaction finalized without a successful contract return.");
       txs.update(id, { stage: "finalized" }); setStatus("Brief funded and finalized."); router.push("/work"); router.refresh();
     } catch (cause) { const message = cause instanceof Error ? cause.message : "Could not fund this brief."; txs.update(id, { stage: "failed", error: message }); setStatus(message); }
