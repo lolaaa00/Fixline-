@@ -1,0 +1,41 @@
+{
+  "name": "fixline",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "contract:validate": "GENVM_VERSION=v0.3.0-rc7 genvm-lint check contracts/fixline.py",
+    "contract:cli": "genlayer --version",
+    "contract:test": "pytest -q tests/direct"
+  },
+  "dependencies": {
+    "@fontsource-variable/manrope": "^5.2.6",
+    "@fontsource-variable/newsreader": "^5.2.8",
+    "genlayer-js": "1.1.8",
+    "lucide-react": "^0.468.0",
+    "next": "15.5.27",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "viem": "^2.37.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "15.5.27",
+    "genlayer": "0.39.1",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
