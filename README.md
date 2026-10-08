@@ -86,7 +86,7 @@ python3.12 -m venv .venv
 cp .env.example .env.local
 ```
 
-Set `NEXT_PUBLIC_FIXLINE_CONTRACT_ADDRESS` to the deployed Studionet address. The RPC and chain ID defaults are already fixed to Studionet.
+The included public configuration points to the deployed Studionet contract. The RPC and chain ID defaults are fixed to Studionet.
 
 Run locally:
 
@@ -122,7 +122,12 @@ Deployment requires an explicitly configured funded deployer account. Never comm
 
 ## Current deployment
 
-No deployment is claimed until an address, transaction, source commit, and explorer evidence are recorded here together.
+- Contract: `FixLine`
+- Address: `0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
+- Deployment transaction: `0x54ac534edfe83a52e9e223cb5d8256478e10263f229a90a57d0fdd62352e773d`
+- Status: `FINALIZED` with `MAJORITY_AGREE` (five agreeing validators)
+- Deployed source commit: `4b66efcd707727d83a6f9012472806fddcf3f90e`
+- Explorer: `https://explorer-studio.genlayer.com/address/0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
 
 ## Limitations
 

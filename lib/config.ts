@@ -3,7 +3,7 @@ export const NETWORK = {
   chainId: 61999,
   chainHex: "0xf22f",
   rpcUrl: process.env.NEXT_PUBLIC_GENLAYER_RPC_URL || "https://studio.genlayer.com/api",
-  explorerUrl: "https://genlayer-explorer.vercel.app",
+  explorerUrl: "https://explorer-studio.genlayer.com",
 } as const;
 
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_FIXLINE_CONTRACT_ADDRESS || "";
