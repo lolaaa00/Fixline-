@@ -124,13 +124,13 @@ Deployment requires an explicitly configured funded deployer account. Never comm
 
 - Source repository: `https://github.com/lolaaa00/Fixline-`
 - Contract: `FixLine`
-- Address: `0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
-- Deployment transaction: `0x54ac534edfe83a52e9e223cb5d8256478e10263f229a90a57d0fdd62352e773d`
-- Status: `FINALIZED` with `MAJORITY_AGREE` (five agreeing validators)
-- Actual deployment sender: `0xaa18eCD158AEC67c75A51768b747cb3247A21689`
-- Deployed source commit: `4b66efcd707727d83a6f9012472806fddcf3f90e`
-- Contract explorer: `https://explorer-studio.genlayer.com/address/0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
-- Transaction explorer: `https://explorer-studio.genlayer.com/tx/0x54ac534edfe83a52e9e223cb5d8256478e10263f229a90a57d0fdd62352e773d`
+- Address: `0x7db79F136a5C0083913f87b3766cD5A8b2D97960`
+- Deployment transaction: `0x1a4ec29b71aa0b5b04e07371ba354b26f4067939357f58d238e432345e4bdc2d`
+- Status: `FINALIZED` with `MAJORITY_AGREE` (three agreeing validators; two idle after quorum)
+- Deployment sender: `0x7099f2F0d13A9e0C208A9E140f681334cc3D6B89`
+- Deployed source commit: `9dcfa643d87ca0658e298a43724e45a13424627b`
+- Contract explorer: `https://explorer-studio.genlayer.com/address/0x7db79F136a5C0083913f87b3766cD5A8b2D97960`
+- Transaction explorer: `https://explorer-studio.genlayer.com/tx/0x1a4ec29b71aa0b5b04e07371ba354b26f4067939357f58d238e432345e4bdc2d`
 - Frontend: `https://fixline-genlayer.vercel.app`
 
 The production frontend was verified at desktop and 390px mobile widths. It loaded without browser console errors, displayed Studionet chain 61999, exposed the contract-backed desk, and presented a clear error when no injected wallet was available. A direct live read of `get_protocol_totals` returned zero funded, paid, refunded, and work-count values on the newly initialized deployment.
