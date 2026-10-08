@@ -126,8 +126,13 @@ Deployment requires an explicitly configured funded deployer account. Never comm
 - Address: `0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
 - Deployment transaction: `0x54ac534edfe83a52e9e223cb5d8256478e10263f229a90a57d0fdd62352e773d`
 - Status: `FINALIZED` with `MAJORITY_AGREE` (five agreeing validators)
+- Actual deployment sender: `0xaa18eCD158AEC67c75A51768b747cb3247A21689`
 - Deployed source commit: `4b66efcd707727d83a6f9012472806fddcf3f90e`
-- Explorer: `https://explorer-studio.genlayer.com/address/0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
+- Contract explorer: `https://explorer-studio.genlayer.com/address/0x78c176bEE85e13B4A379E1e795B5C59DD910Cc21`
+- Transaction explorer: `https://explorer-studio.genlayer.com/tx/0x54ac534edfe83a52e9e223cb5d8256478e10263f229a90a57d0fdd62352e773d`
+- Frontend: `https://fixline-genlayer.vercel.app`
+
+The production frontend was verified at desktop and 390px mobile widths. It loaded without browser console errors, displayed Studionet chain 61999, exposed the contract-backed desk, and presented a clear error when no injected wallet was available. A direct live read of `get_protocol_totals` returned zero funded, paid, refunded, and work-count values on the newly initialized deployment.
 
 ## Limitations
 
