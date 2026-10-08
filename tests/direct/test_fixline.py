@@ -2,6 +2,7 @@ import json
 import pytest
 
 CONTRACT = "contracts/fixline.py"
+SDK_VERSION = "v0.2.16"
 REPO = "https://github.com/example/public-project"
 CRITERIA = json.dumps(["A regression test demonstrates the previous failure.", "The submitted revision implements the documented behavior."])
 HOSTS = json.dumps(["github.com"])
@@ -20,7 +21,7 @@ def create_work(contract, vm, sponsor, contributor):
 
 
 def test_fund_and_accept(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     create_work(contract, direct_vm, direct_alice, direct_bob)
     work = contract.get_work(1)
     assert int(work.award) == AWARD
@@ -31,7 +32,7 @@ def test_fund_and_accept(direct_vm, direct_deploy, direct_alice, direct_bob):
 
 
 def test_rejects_wrong_funding(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     direct_vm.sender = as_contract_address(contract, direct_alice)
     direct_vm.value = AWARD - 1
     with pytest.raises(Exception):
@@ -39,7 +40,7 @@ def test_rejects_wrong_funding(direct_vm, direct_deploy, direct_alice, direct_bo
 
 
 def test_only_named_contributor_accepts(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     create_work(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.sender = as_contract_address(contract, direct_charlie)
     with pytest.raises(Exception):
@@ -47,7 +48,7 @@ def test_only_named_contributor_accepts(direct_vm, direct_deploy, direct_alice, 
 
 
 def test_delivery_is_revision_bound_and_duplicate_safe(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     create_work(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.sender = as_contract_address(contract, direct_bob)
     contract.accept_work(1)
@@ -62,7 +63,7 @@ def test_delivery_is_revision_bound_and_duplicate_safe(direct_vm, direct_deploy,
 
 
 def test_rejects_evidence_outside_frozen_repository(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     create_work(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.sender = as_contract_address(contract, direct_bob)
     contract.accept_work(1)
@@ -71,7 +72,7 @@ def test_rejects_evidence_outside_frozen_repository(direct_vm, direct_deploy, di
 
 
 def test_rejects_commit_url_for_a_different_revision(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     create_work(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.sender = as_contract_address(contract, direct_bob)
     contract.accept_work(1)
@@ -80,7 +81,7 @@ def test_rejects_commit_url_for_a_different_revision(direct_vm, direct_deploy, d
 
 
 def test_rejects_ambiguous_repository_url(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     direct_vm.sender = as_contract_address(contract, direct_alice)
     direct_vm.value = AWARD
     with pytest.raises(Exception):
@@ -88,7 +89,7 @@ def test_rejects_ambiguous_repository_url(direct_vm, direct_deploy, direct_alice
 
 
 def test_sponsor_can_withdraw_only_before_acceptance(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     create_work(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.sender = as_contract_address(contract, direct_alice)
     contract.withdraw_unaccepted(1)
@@ -107,7 +108,7 @@ def prepare_delivery(contract, vm, sponsor, contributor):
 
 
 def test_consensus_qualified_awards_once(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     prepare_delivery(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.mock_web("github.com", {"status": 200, "body": "public commit diff and passing test"})
     direct_vm.mock_llm("bounded public software delivery", json.dumps({"outcome": "QUALIFIED", "results": ["SATISFIED", "SATISFIED"], "rationale": "Both frozen criteria are supported by the revision."}))
@@ -121,7 +122,7 @@ def test_consensus_qualified_awards_once(direct_vm, direct_deploy, direct_alice,
 
 
 def test_consensus_uncertainty_never_pays(direct_vm, direct_deploy, direct_alice, direct_bob):
-    contract = direct_deploy(CONTRACT)
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
     prepare_delivery(contract, direct_vm, direct_alice, direct_bob)
     direct_vm.mock_web("github.com", {"status": 200, "body": "commit exists but test evidence is incomplete"})
     direct_vm.mock_llm("bounded public software delivery", json.dumps({"outcome": "INSUFFICIENT_EVIDENCE", "results": ["SATISFIED", "UNPROVEN"], "rationale": "The implementation criterion is not proven."}))
