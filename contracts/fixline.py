@@ -94,7 +94,7 @@ class FixLine(gl.Contract):
 
     def _validate_host(self, url: str, repository: str, exact_commit: bool):
         assert url.startswith("https://github.com/"), "only public GitHub evidence is supported"
-        assert "@" not in url and len(url) <= 500, "invalid evidence URL"
+        assert "@" not in url and "?" not in url and "#" not in url and len(url) <= 500, "invalid evidence URL"
         if exact_commit:
             assert url.startswith(repository + "/commit/"), "commit URL must belong to the frozen repository"
 
@@ -102,7 +102,11 @@ class FixLine(gl.Contract):
     def open_work(self, contributor: Address, title: str, brief: str, repository: str, criteria: str, allowed_hosts: str, accept_by: u256, deliver_by: u256, award: u256):
         assert contributor != self._zero() and contributor != gl.message.sender_address, "invalid contributor"
         assert 0 < len(title) <= 100 and 0 < len(brief) <= 2400
-        assert repository.startswith("https://github.com/") and len(repository) <= 300 and repository.count("/") >= 4
+        repository = repository.rstrip("/")
+        assert repository.startswith("https://github.com/") and len(repository) <= 300 and repository.count("/") == 4
+        assert "@" not in repository and "?" not in repository and "#" not in repository
+        owner_repo = repository[len("https://github.com/"):].split("/")
+        assert len(owner_repo) == 2 and all(owner_repo), "repository must identify one owner and repository"
         rules = json.loads(criteria)
         hosts = json.loads(allowed_hosts)
         assert isinstance(rules, list) and 1 <= len(rules) <= 8
@@ -113,7 +117,7 @@ class FixLine(gl.Contract):
         assert award > 0 and gl.message.value == award, "funding must exactly equal the award"
         work_id = self.next_work_id
         self.next_work_id += u256(1)
-        self.works[work_id] = Work(gl.message.sender_address, contributor, title, brief, repository.rstrip("/"), criteria, allowed_hosts, award, award, now, accept_by, deliver_by, u8(FUNDED), u16(0), u16(0))
+        self.works[work_id] = Work(gl.message.sender_address, contributor, title, brief, repository, criteria, allowed_hosts, award, award, now, accept_by, deliver_by, u8(FUNDED), u16(0), u16(0))
         self._append_account(gl.message.sender_address, work_id)
         self._append_account(contributor, work_id)
         self.total_funded += award
@@ -133,6 +137,7 @@ class FixLine(gl.Contract):
         assert gl.message.sender_address == work.contributor and self._now() <= work.deliver_by
         assert len(revision) == 40 and all(ch in "0123456789abcdefABCDEF" for ch in revision)
         self._validate_host(artifact_url, work.repository, True)
+        assert artifact_url == work.repository + "/commit/" + revision.lower(), "commit URL must match the submitted revision"
         if check_url:
             self._validate_host(check_url, work.repository, False)
         evidence = json.loads(evidence_map)

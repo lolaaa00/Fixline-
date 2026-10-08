@@ -70,6 +70,23 @@ def test_rejects_evidence_outside_frozen_repository(direct_vm, direct_deploy, di
         contract.deliver_revision(1, "b" * 40, "https://github.com/attacker/project/commit/" + "b" * 40, "", json.dumps(["x", "y"]))
 
 
+def test_rejects_commit_url_for_a_different_revision(direct_vm, direct_deploy, direct_alice, direct_bob):
+    contract = direct_deploy(CONTRACT)
+    create_work(contract, direct_vm, direct_alice, direct_bob)
+    direct_vm.sender = as_contract_address(contract, direct_bob)
+    contract.accept_work(1)
+    with pytest.raises(Exception):
+        contract.deliver_revision(1, "b" * 40, REPO + "/commit/" + "c" * 40, "", json.dumps(["x", "y"]))
+
+
+def test_rejects_ambiguous_repository_url(direct_vm, direct_deploy, direct_alice, direct_bob):
+    contract = direct_deploy(CONTRACT)
+    direct_vm.sender = as_contract_address(contract, direct_alice)
+    direct_vm.value = AWARD
+    with pytest.raises(Exception):
+        contract.open_work(as_contract_address(contract, direct_bob), "Repair retry handling", "A bounded public change.", REPO + "/tree/main", CRITERIA, HOSTS, 2_000_000_000, 2_000_100_000, AWARD)
+
+
 def test_sponsor_can_withdraw_only_before_acceptance(direct_vm, direct_deploy, direct_alice, direct_bob):
     contract = direct_deploy(CONTRACT)
     create_work(contract, direct_vm, direct_alice, direct_bob)

@@ -29,13 +29,15 @@ export function CreateBriefForm() {
       if (cleanCriteria.length < 1 || cleanCriteria.length > 8) throw new Error("Use between one and eight mandatory criteria.");
       const repository = String(data.get("repository") || "").trim();
       const parsed = new URL(repository);
-      if (parsed.protocol !== "https:" || !["github.com"].includes(parsed.hostname.toLowerCase())) throw new Error("V1 accepts public GitHub repository URLs only.");
+      const path = parsed.pathname.replace(/\/$/, "").split("/").filter(Boolean);
+      if (parsed.protocol !== "https:" || parsed.hostname.toLowerCase() !== "github.com" || parsed.username || parsed.password || parsed.search || parsed.hash || path.length !== 2) throw new Error("Enter a canonical repository URL: https://github.com/owner/repository");
+      const canonicalRepository = `https://github.com/${path[0]}/${path[1]}`;
       const award = parseGen(String(data.get("award")));
       const acceptBy = epoch(String(data.get("acceptBy"))); const deliverBy = epoch(String(data.get("deliverBy")));
       const now = BigInt(Math.floor(Date.now() / 1000));
       if (acceptBy <= now || deliverBy <= acceptBy) throw new Error("Acceptance must be in the future and delivery must follow acceptance.");
       txs.update(id, { stage: "signature" }); setStatus("Awaiting wallet approval…");
-      const args = [toCalldataAddress(String(data.get("contributor"))), String(data.get("title")).trim(), String(data.get("brief")).trim(), repository.replace(/\/$/, ""), JSON.stringify(cleanCriteria), JSON.stringify(["github.com"]), acceptBy, deliverBy, award];
+      const args = [toCalldataAddress(String(data.get("contributor"))), String(data.get("title")).trim(), String(data.get("brief")).trim(), canonicalRepository, JSON.stringify(cleanCriteria), JSON.stringify(["github.com"]), acceptBy, deliverBy, award];
       const hash = String(await submitContract(wallet.client, "open_work", args, award));
       txs.update(id, { hash, stage: "submitted" }); setStatus("Submitted. Validators and the network are processing the transaction…");
       const receipt = await waitForFinalized(wallet.client, hash, stage => txs.update(id, { stage }));

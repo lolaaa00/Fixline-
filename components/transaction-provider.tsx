@@ -10,8 +10,9 @@ const STORAGE_KEY = "fixline:transactions:v1";
 
 export function TransactionProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<TrackedTransaction[]>([]);
-  useEffect(() => { try { setTransactions(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); } catch { setTransactions([]); } }, []);
-  useEffect(() => { if (transactions.length) localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions.slice(0, 20))); }, [transactions]);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { try { setTransactions(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); } catch { setTransactions([]); } finally { setHydrated(true); } }, []);
+  useEffect(() => { if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions.slice(0, 20))); }, [hydrated, transactions]);
   useEffect(() => {
     const active = transactions.filter(tx => tx.hash && ["submitted", "pending", "accepted"].includes(tx.stage));
     if (!active.length) return;
