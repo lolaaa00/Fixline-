@@ -25,7 +25,7 @@ export function WorkRoom({ id }: { id: number }) {
   if(error)return <div className="empty-state error"><h2>Unable to open work room</h2><p>{error}</p></div>;
   if(!work)return <Loading/>;
   const isSponsor=addressKey(wallet.account)===addressKey(work.sponsor); const isContributor=addressKey(wallet.account)===addressKey(work.contributor); const now=BigInt(Math.floor(Date.now()/1000));
-  const canAccept=work.status===0&&isContributor&&now<=work.acceptBy; const canDeliver=[1,3,4].includes(work.status)&&isContributor&&now<=work.deliverBy; const canAssess=work.status===2&&!!submission; const canRetry=work.status===4&&!!submission&&now>=submission.retryAfter; const canWithdraw=work.status===0&&isSponsor; const canExpire=[0,1,2,3,4].includes(work.status)&&now>work.deliverBy;
+  const canAccept=work.status===0&&isContributor&&now<=work.acceptBy; const canDeliver=[1,3,4].includes(work.status)&&isContributor&&now<=work.deliverBy; const canAssess=work.status===2&&!!submission; const canRetry=work.status===4&&!!submission&&now>=submission.retryAfter; const canWithdraw=work.status===0&&isSponsor; const canExpire=[0,1,3].includes(work.status)&&now>work.deliverBy;
   return <div className="room"><Link className="back-link" href="/work"><ArrowLeft size={15}/> Back to desk</Link>
     <header className="room-head"><div><div className="kicker">Work order {String(id).padStart(3,"0")}</div><h1>{work.title}</h1><p>{work.brief}</p></div><div className="award-stamp"><span>FIXED AWARD</span><strong>{formatGen(work.award)}</strong><i>{STATUS_LABELS[work.status]||"UNKNOWN"}</i></div></header>
     <div className="room-grid"><div className="room-primary">

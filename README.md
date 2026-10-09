@@ -73,6 +73,7 @@ Important invariants:
 - brief terms and criteria cannot change after creation;
 - a delivery is bound to an immutable revision and unique digest;
 - no negative or uncertain result pays;
+- every on-time delivery remains protected from expiry refunds until assessment and any scheduled retry complete;
 - a work order can award at most once;
 - award plus refund never exceeds original funding;
 - terminal work cannot be reopened.

@@ -7,6 +7,11 @@ REPO = "https://github.com/example/public-project"
 CRITERIA = json.dumps(["A regression test demonstrates the previous failure.", "The submitted revision implements the documented behavior."])
 HOSTS = json.dumps(["github.com"])
 AWARD = 10**18
+DELIVER_BY = 2_000_100_000
+
+def set_contract_time(contract, timestamp):
+    timestamp_type = contract.get_work(1).deliver_by.__class__
+    contract._now = lambda: timestamp_type(timestamp)
 
 def as_contract_address(contract, value):
     return contract._zero().__class__("0x" + bytes(value).hex())
@@ -16,7 +21,7 @@ def create_work(contract, vm, sponsor, contributor):
     contributor = as_contract_address(contract, contributor)
     vm.sender = sponsor
     vm.value = AWARD
-    contract.open_work(contributor, "Repair retry handling", "A bounded public change.", REPO, CRITERIA, HOSTS, 2_000_000_000, 2_000_100_000, AWARD)
+    contract.open_work(contributor, "Repair retry handling", "A bounded public change.", REPO, CRITERIA, HOSTS, 2_000_000_000, DELIVER_BY, AWARD)
     vm.value = 0
 
 
@@ -132,3 +137,40 @@ def test_consensus_uncertainty_never_pays(direct_vm, direct_deploy, direct_alice
     assert int(work.status) == 4
     assert int(work.remaining) == AWARD
     assert submission.outcome == "INSUFFICIENT_EVIDENCE"
+
+
+def test_on_time_submission_cannot_expire_before_assessment(direct_vm, direct_deploy, direct_alice, direct_bob):
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
+    prepare_delivery(contract, direct_vm, direct_alice, direct_bob)
+    set_contract_time(contract, DELIVER_BY + 1)
+    with pytest.raises(Exception):
+        contract.close_expired(1)
+    direct_vm.mock_web("github.com", {"status": 200, "body": "public commit diff and passing test"})
+    direct_vm.mock_llm("bounded public software delivery", json.dumps({"outcome": "QUALIFIED", "results": ["SATISFIED", "SATISFIED"], "rationale": "Both frozen criteria are supported by the revision."}))
+    contract.review_delivery(1, 1)
+    work = contract.get_work(1)
+    assert int(work.status) == 5
+    assert int(work.remaining) == 0
+
+
+def test_retry_remains_available_after_delivery_deadline(direct_vm, direct_deploy, direct_alice, direct_bob):
+    contract = direct_deploy(CONTRACT, sdk_version=SDK_VERSION)
+    prepare_delivery(contract, direct_vm, direct_alice, direct_bob)
+    set_contract_time(contract, DELIVER_BY - 1_800)
+    direct_vm.mock_web("github.com", {"status": 200, "body": "commit exists but evidence is temporarily incomplete"})
+    direct_vm.mock_llm("bounded public software delivery", json.dumps({"outcome": "INSUFFICIENT_EVIDENCE", "results": ["SATISFIED", "UNPROVEN"], "rationale": "One criterion cannot yet be proven."}))
+    contract.review_delivery(1, 1)
+    retry_after = int(contract.get_submission(1, 1).retry_after)
+    assert retry_after > DELIVER_BY
+
+    set_contract_time(contract, retry_after)
+    with pytest.raises(Exception):
+        contract.close_expired(1)
+
+    direct_vm.clear_mocks()
+    direct_vm.mock_web("github.com", {"status": 200, "body": "public commit diff and passing test"})
+    direct_vm.mock_llm("bounded public software delivery", json.dumps({"outcome": "QUALIFIED", "results": ["SATISFIED", "SATISFIED"], "rationale": "Both frozen criteria are now supported."}))
+    contract.retry_review(1, 1)
+    work = contract.get_work(1)
+    assert int(work.status) == 5
+    assert int(work.remaining) == 0

@@ -225,7 +225,7 @@ class FixLine(gl.Contract):
         work = self._work(work_id)
         assert work.status == u8(RETRYABLE) and number == work.submission_count
         delivery = self.deliveries[self._delivery_key(work_id, number)]
-        assert self._now() >= delivery.retry_after and self._now() <= work.deliver_by
+        assert self._now() >= delivery.retry_after
         work.status = u8(SUBMITTED)
         self.works[work_id] = work
         self.review_delivery(work_id, number)
@@ -245,6 +245,7 @@ class FixLine(gl.Contract):
     def close_expired(self, work_id: u256):
         work = self._work(work_id)
         assert work.status not in (u8(AWARDED), u8(WITHDRAWN), u8(EXPIRED_REFUNDED)) and self._now() > work.deliver_by
+        assert work.status not in (u8(SUBMITTED), u8(RETRYABLE)), "on-time delivery review is still pending"
         amount = work.remaining
         work.remaining = u256(0)
         work.status = u8(EXPIRED_REFUNDED)
