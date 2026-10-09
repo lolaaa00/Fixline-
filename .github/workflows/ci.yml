@@ -31,6 +31,6 @@ jobs:
       - run: npm run contract:test
       - run: npm run build
         env:
-          NEXT_PUBLIC_FIXLINE_CONTRACT_ADDRESS: "0x7db79F136a5C0083913f87b3766cD5A8b2D97960"
+          NEXT_PUBLIC_FIXLINE_CONTRACT_ADDRESS: "0xF2dedE7065a14C0c3b1a26f580A786fC6630dB86"
           NEXT_PUBLIC_GENLAYER_RPC_URL: https://studio.genlayer.com/api
           NEXT_PUBLIC_GENLAYER_CHAIN_ID: "61999"
